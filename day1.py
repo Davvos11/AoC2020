@@ -13,9 +13,24 @@ def find_sum(entries: [int], sum_value: int) -> (int, int):
             return entry, other_entry
 
 
+def find_sum3(entries: [int], sum_value: int) -> (int, int, int):
+    for entry1 in entries:
+        for entry2 in entries:
+            other_entry = sum_value - entry1 - entry2
+            if other_entry in entries:
+                return entry1, entry2, other_entry
+
+
 if __name__ == '__main__':
     input1 = read_input('input/day1')
+
     solution1 = find_sum(input1, 2020)
+    print("Part 1")
     print(solution1)
     print(solution1[0] * solution1[1])
+
+    solution2 = find_sum3(input1, 2020)
+    print("Part 2")
+    print(solution2)
+    print(solution2[0] * solution2[1] * solution2[2])
 
