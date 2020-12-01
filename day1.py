@@ -1,3 +1,6 @@
+import time
+
+
 def read_input(filename: str) -> [int]:
     # Read file
     with open(filename) as file:
@@ -24,13 +27,19 @@ def find_sum3(entries: [int], sum_value: int) -> (int, int, int):
 if __name__ == '__main__':
     input1 = read_input('input/day1')
 
+    time_a = time.time()
     solution1 = find_sum(input1, 2020)
-    print("Part 1")
+    time_b = time.time()
+
+    print(f"Part 1 ({time_b -time_a}s)")
     print(solution1)
     print(solution1[0] * solution1[1])
 
+    time_a = time.time()
     solution2 = find_sum3(input1, 2020)
-    print("Part 2")
+    time_b = time.time()
+
+    print(f"\nPart 2 ({time_b -time_a}s)")
     print(solution2)
     print(solution2[0] * solution2[1] * solution2[2])
 
