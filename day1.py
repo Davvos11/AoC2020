@@ -1,4 +1,5 @@
 import time
+from typing import Iterable
 
 
 def read_input(filename: str) -> [int]:
@@ -9,14 +10,14 @@ def read_input(filename: str) -> [int]:
     return [int(line) for line in lines]
 
 
-def find_sum(entries: [int], sum_value: int) -> (int, int):
+def find_sum(entries: Iterable[int], sum_value: int) -> (int, int):
     for entry in entries:
         other_entry = sum_value - entry
         if other_entry in entries:
             return entry, other_entry
 
 
-def find_sum3(entries: [int], sum_value: int) -> (int, int, int):
+def find_sum3(entries: Iterable[int], sum_value: int) -> (int, int, int):
     for entry1 in entries:
         for entry2 in entries:
             other_entry = sum_value - entry1 - entry2
@@ -26,6 +27,8 @@ def find_sum3(entries: [int], sum_value: int) -> (int, int, int):
 
 if __name__ == '__main__':
     input1 = read_input('input/day1')
+    # Convert to set
+    input1 = set(input1)
 
     time_a = time.time()
     solution1 = find_sum(input1, 2020)
