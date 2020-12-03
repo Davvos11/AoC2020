@@ -1,6 +1,6 @@
 
 def read_line(line: str) -> [bool]:
-    return [char == '#' for char in line]
+    return [char == '#' for char in line.strip()]
 
 
 def read_input(filename: str) -> [[bool]]:
