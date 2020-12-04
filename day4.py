@@ -15,6 +15,8 @@ def read_input(filename: str) -> [str]:
                 current_passport = ""
             else:
                 current_passport += line + " "
+        # Append the last passport
+        passports.append(current_passport.strip())
 
     # Convert to booleans
     return passports
