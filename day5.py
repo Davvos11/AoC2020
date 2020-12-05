@@ -36,5 +36,18 @@ def read_input(filename: str) -> [seatType]:
 
 if __name__ == '__main__':
     input5 = read_input('input/day5')
+    seat_ids = [x[2] for x in input5]
 
-    print(f"Puzzle 1: {max(x[2] for x in input5)}")
+    print(f"Puzzle 1: {max(seat_ids)}")
+
+    # Get a set of empty seats
+    empty_seats = set(range(8*127+7)) - set(seat_ids)
+    # Check for each seat if their neighbours are also empty, if not: we got our seat
+    for seat in list(empty_seats):
+        # Special cases for highest and lowest index:
+        if seat == 0 or seat == max(empty_seats):
+            # Just ignore them since it was given that those aren't our seat
+            continue
+        else:
+            if not (seat - 1 in empty_seats) and not (seat + 1 in empty_seats):
+                print(f"Puzzle 2: {seat}")
