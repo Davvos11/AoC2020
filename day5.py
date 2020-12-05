@@ -35,5 +35,6 @@ def read_input(filename: str) -> [seatType]:
 
 
 if __name__ == '__main__':
-    input5 = read_input('input/day5_test')
-    print(input5)
+    input5 = read_input('input/day5')
+
+    print(f"Puzzle 1: {max(x[2] for x in input5)}")
