@@ -32,3 +32,18 @@ if __name__ == '__main__':
         yes_count += len(yes_set)
 
     print(f"Puzzle 1: {yes_count}")
+
+    yes_count = 0
+    for group in input6:
+        yes_set = set()
+        for i, person in enumerate(group):
+            if i == 0:
+                # Create a set with all yes answers of the first person
+                yes_set = set(person)
+            else:
+                # For all other persons in the group, remove the answers that they did not answer yes to
+                yes_set = yes_set.intersection(set(person))
+
+        yes_count += len(yes_set)
+
+    print(f"Puzzle 2: {yes_count}")
