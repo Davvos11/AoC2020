@@ -20,5 +20,15 @@ def read_input(filename: str) -> [str]:
 
 
 if __name__ == '__main__':
-    input6 = read_input('input/day6_test')
-    print(input6)
+    input6 = read_input('input/day6')
+
+    yes_count = 0
+    for group in input6:
+        yes_set = set()
+        for person in group:
+            for question in person:
+                yes_set.add(question)
+
+        yes_count += len(yes_set)
+
+    print(f"Puzzle 1: {yes_count}")
