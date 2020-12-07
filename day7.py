@@ -32,7 +32,19 @@ def get_bags_containing(bags: bagType, bag_name: str) -> Set[str]:
     return result
 
 
+def count_bags_inside(bags: bagType, bag_name: str) -> int:
+    result = 0
+
+    for inner_bag in bags[bag_name]:
+        result += inner_bag[0]
+        # Also count the bags inside this bag (recursion)
+        result += inner_bag[0] * count_bags_inside(bags, inner_bag[1])
+
+    return result
+
+
 if __name__ == '__main__':
     input7 = read_input('input/day7')
 
     print(f"Puzzle 1: {len(get_bags_containing(input7, 'shiny gold'))} bags")
+    print(f"Puzzle 2: {count_bags_inside(input7, 'shiny gold')} bags")
