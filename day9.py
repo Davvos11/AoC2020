@@ -14,6 +14,22 @@ def verify_number(number: int, preamble: List[int]) -> bool:
     return False
 
 
+def find_incorrect_num(preamble_len: int, numbers: List[int]) -> int:
+    preamble = []
+    for i, number in enumerate(input9):
+        # Create initial preamble
+        if i < preamble_len:
+            preamble.append(number)
+            continue
+
+        # For the rest of the input, verify each number
+        if not verify_number(number, preamble):
+            return number
+        # And move the preamble set
+        preamble = preamble[1::]
+        preamble.append(number)
+
+
 def find_cont_sum(target: int, numbers: List[int]) -> Set[int]:
     for i in range(len(numbers)):
         cont_set = set()
@@ -29,27 +45,11 @@ def find_cont_sum(target: int, numbers: List[int]) -> Set[int]:
                 break
 
 
-PREAMBLE_LEN = 25
-
 if __name__ == '__main__':
     input9 = read_input('input/day9')
 
-    preamble = []
-    puzzle1 = -1
-    for i, number in enumerate(input9):
-        # Create initial preamble
-        if i < PREAMBLE_LEN:
-            preamble.append(number)
-            continue
-
-        # For the rest of the input, verify each number
-        if not verify_number(number, preamble):
-            puzzle1 = number
-            print(f"Puzzle 1: {number} does not follow the property")
-            break
-        # And move the preamble set
-        preamble = preamble[1::]
-        preamble.append(number)
+    puzzle1 = find_incorrect_num(25, input9)
+    print(f"Puzzle 1: {puzzle1} does not follow the property")
 
     puzzle2 = find_cont_sum(puzzle1, input9)
     min_int = min(puzzle2)
