@@ -1,3 +1,4 @@
+import time
 from typing import Set, List
 
 
@@ -48,10 +49,14 @@ def find_cont_sum(target: int, numbers: List[int]) -> Set[int]:
 if __name__ == '__main__':
     input9 = read_input('input/day9')
 
+    t1 = time.time()
     puzzle1 = find_incorrect_num(25, input9)
     print(f"Puzzle 1: {puzzle1} does not follow the property")
+    print(f"   Took: {(time.time() - t1)*1000}ms")
 
+    t1 = time.time()
     puzzle2 = find_cont_sum(puzzle1, input9)
     min_int = min(puzzle2)
     max_int = max(puzzle2)
     print(f"Puzzle 2: {min_int + max_int} ({min_int} + {max_int})")
+    print(f"   Took: {(time.time() - t1)*1000}ms")
