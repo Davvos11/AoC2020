@@ -25,31 +25,53 @@ def get_adapter_chain(adapters: Set[int]) -> Dict[int, int]:
     return differences
 
 
-def get_adapter_chain_arrangements(adapters: Set[int]) -> [[int]]:
-    result: [[int]] = []
-    target = max(adapters) + 3
+def get_adapter_chain_arrangements(adapters: Set[int]) -> int:
+    # Add wall and phone
+    nodes = adapters.union({0, max(adapters) + 3})
 
-    # Initialise empty queue (with start = 0)
-    todo: [[int]] = [[0]]
+    # Find all vertices between nodes
+    vertices: Dict[int, Set[int]] = {}
 
-    while len(todo) > 0:
-        print(f"\rQueue: {len(todo)}", end="")
-        # Continue with next chain from queue
-        chain = todo.pop(0)
-        current_joltage = chain[len(chain)-1]
-
-        # Check all possible next adapters and add the new partial chain to the queue
+    for a in nodes:
         for i in range(1, 4):
-            next_joltage = current_joltage + i
-            if next_joltage in adapters:
-                todo.append(chain + [next_joltage])
+            if a + i in nodes:
+                if a in vertices:
+                    vertices[a].add(a+i)
+                else:
+                    vertices[a] = {a + i}
 
-        # Check if we can reach the target
-        if current_joltage >= target - 3:
-            # Finish this branch
-            result.append(chain)
+    # Find all parents of nodes
+    parents: Dict[int, Set[int]] = {}
+    for v in vertices:
+        for child in vertices[v]:
+            if child in parents:
+                parents[child].add(v)
+            else:
+                parents[child] = {v}
 
-    return result
+    src = 0
+    dest = max(nodes)
+
+    # Initialise queue and visited list
+    visited = {src}
+    queue = [src]
+    ways: Dict[int, int] = {0: 1}
+
+    while queue:
+        node = queue.pop()
+
+        for next_node in sorted(vertices[node]):
+            if next_node == dest:
+                break
+            if next_node not in visited:
+                visited.add(next_node)
+                w = 0
+                for p in parents[next_node]:
+                    w += ways[p]
+                ways[next_node] = w
+                queue.append(next_node)
+
+    return ways[dest - 3]
 
 
 if __name__ == '__main__':
@@ -62,5 +84,5 @@ if __name__ == '__main__':
 
     t1 = time.time()
     puzzle2 = get_adapter_chain_arrangements(input10)
-    print(f"\nPuzzle 2: {len(puzzle2)}")
+    print(f"\nPuzzle 2: {puzzle2}")
     print(f"   Time: {time.time() - t1}")
