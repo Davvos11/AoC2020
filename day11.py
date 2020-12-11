@@ -47,12 +47,12 @@ class SeatSolver:
                             result.add((y, x))
         return result
 
-    def get_seats_occupied(self, coord_set: Set[Tuple[int, int]]) -> [bool]:
-        result = []
-        for i, j in coord_set:
-            seat = self.seats[i][j]
-            if seat is not None and seat['occupied']:
-                result.append(seat)
+    def get_seats_occupied(self) -> Set[Tuple[int, int]]:
+        result = set()
+        for i, row in enumerate(self.seats):
+            for j, seat in enumerate(row):
+                if seat is not None and seat['occupied']:
+                    result.add((i, j))
         return result
 
     @staticmethod
@@ -71,6 +71,7 @@ class SeatSolver:
     def apply_rules(self) -> ([[Seat or None]], bool):
         result = []
         changed = False
+        occupied_seats = self.get_seats_occupied()
 
         for i, row in enumerate(self.seats):
             result.append([])
@@ -81,7 +82,8 @@ class SeatSolver:
 
                 if (i, j) not in self.adjacent_seats:
                     self.adjacent_seats[(i, j)] = self.get_adjacent_seats(i, j)
-                adj_seats_occ = self.get_seats_occupied(self.adjacent_seats[(i, j)])
+                adj_seats_occ = [s for s in self.adjacent_seats[(i, j)] if s in occupied_seats]
+                # adj_seats_occ = self.get_seats_occupied(self.adjacent_seats[(i, j)])
 
                 new_seat, seat_changed = self.apply_rule(seat, adj_seats_occ)
                 result[i].append(new_seat)
