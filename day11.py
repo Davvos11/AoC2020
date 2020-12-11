@@ -1,5 +1,5 @@
 import time
-from typing import TypedDict
+from typing import TypedDict, Dict, List, Set, Tuple
 
 
 class Seat(TypedDict):
@@ -26,8 +26,8 @@ def read_input(filename: str) -> [[Seat or None]]:
         return [read_line(line) for line in file]
 
 
-def get_adjacent_seats_occupied(seats: [[Seat or None]], row: int, col: int) -> [bool]:
-    result = []
+def get_adjacent_seats(seats: [[Seat or None]], row: int, col: int) -> Set[Tuple[int, int]]:
+    result = set()
     width = len(seats[0])
     height = len(seats)
     for i in range(-1, 2):
@@ -38,11 +38,20 @@ def get_adjacent_seats_occupied(seats: [[Seat or None]], row: int, col: int) -> 
                 if 0 <= y < height and 0 <= x < width:
                     seat = seats[y][x]
                     if seat is not None:
-                        result.append(seats[y][x]['occupied'])
+                        result.add((y, x))
     return result
 
 
-def apply_rules(seats: [[Seat or None]]) -> ([[Seat or None]], bool):
+def get_seats_occupied(seats: [[Seat or None]], coord_set: Set[Tuple[int, int]]) -> [bool]:
+    result = []
+    for i, j in coord_set:
+        seat = seats[i][j]
+        if seat is not None and seat['occupied']:
+            result.append(seat)
+    return result
+
+
+def apply_rules(seats: [[Seat or None]], adjacent_seats: Dict[Tuple[int, int], Set[Tuple[int, int]]]) -> ([[Seat or None]], bool):
     result = []
     changed = False
 
@@ -52,13 +61,17 @@ def apply_rules(seats: [[Seat or None]]) -> ([[Seat or None]], bool):
             if seat is None:
                 result[i].append(None)
                 continue
-            adj_seats = get_adjacent_seats_occupied(seats, i, j)
+
+            if (i, j) not in adjacent_seats:
+                adjacent_seats[(i, j)] = get_adjacent_seats(seats, i, j)
+            adj_seats_occ = get_seats_occupied(seats, adjacent_seats[(i, j)])
+
             # If a seat is empty (L) and there are no occupied seats adjacent to it, the seat becomes occupied.
-            if not seat['occupied'] and not any(adj_seats):
+            if not seat['occupied'] and not any(adj_seats_occ):
                 changed = True
                 result[i].append(Seat(occupied=True))
             # If a seat is occupied (#) and four or more seats adjacent to it are also occupied, the seat becomes empty.
-            elif seat['occupied'] and sum(adj_seats) >= 4:
+            elif seat['occupied'] and len(adj_seats_occ) >= 4:
                 changed = True
                 result[i].append(Seat(occupied=False))
             # Otherwise, the seat's state does not change.
@@ -72,8 +85,9 @@ if __name__ == '__main__':
 
     t1 = time.time()
 
+    adjacent_seats: Dict[Tuple[int, int], Set[Tuple[(int, int)]]] = {}
     while True:
-        input11, changed = apply_rules(input11)
+        input11, changed = apply_rules(input11, adjacent_seats)
         # Check if something changed
         if not changed:
             occupied = 0
