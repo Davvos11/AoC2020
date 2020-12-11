@@ -104,10 +104,54 @@ class SeatSolver:
                 return occupied
 
 
+class SeatSolver2(SeatSolver):
+    def get_adjacent_seats(self, row: int, col: int) -> Set[Tuple[int, int]]:
+        result = set()
+        width = len(self.seats[0])
+        height = len(self.seats)
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                if not (i == 0 and j == 0):
+                    c = 1
+                    while True:
+                        # Check the next spot in "sight" until we find a seat
+                        y = row - c*i
+                        x = col - c*j
+                        if 0 <= y < height and 0 <= x < width:
+                            seat = self.seats[y][x]
+                            if seat is not None:
+                                result.add((y, x))
+                                break
+                            else:
+                                c += 1
+                        else:
+                            break
+
+        return result
+
+    @staticmethod
+    def apply_rule(seat: Seat, adj_seats_occ: [bool]) -> (Seat, bool):
+        # If a seat is empty (L) and there are no occupied seats adjacent to it, the seat becomes occupied.
+        if not seat['occupied'] and not any(adj_seats_occ):
+            return Seat(occupied=True), True
+        # If a seat is occupied (#) and *five* or more seats adjacent to it are also occupied,
+        # the seat becomes empty.
+        elif seat['occupied'] and len(adj_seats_occ) >= 5:
+            return Seat(occupied=False), True
+        # Otherwise, the seat's state does not change.
+        else:
+            return Seat(occupied=seat['occupied']), False
+
+
 if __name__ == '__main__':
     input11: [[Seat or None]] = read_input('input/day11')
 
     t1 = time.time()
     solver = SeatSolver(input11)
+    print(f"Puzzle 1: {solver.run()} seats ocupied")
+    print(f"   Time: {time.time() - t1}s")
+
+    t1 = time.time()
+    solver = SeatSolver2(input11)
     print(f"Puzzle 1: {solver.run()} seats ocupied")
     print(f"   Time: {time.time() - t1}s")
