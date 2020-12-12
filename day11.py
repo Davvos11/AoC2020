@@ -31,6 +31,7 @@ class SeatSolver:
     def __init__(self, seats: [[Seat or None]]):
         self.seats = seats
         self.adjacent_seats: Dict[Tuple[int, int], Set[Tuple[int, int]]] = {}
+        self.occupied: Set[Tuple[int, int]] = set()
 
     def get_adjacent_seats(self, row: int, col: int) -> Set[Tuple[int, int]]:
         result = set()
@@ -56,20 +57,21 @@ class SeatSolver:
         return result
 
     @staticmethod
-    def apply_rule(seat: Seat, adj_seats_occ: [bool]) -> (Seat, bool):
+    def apply_rule(seat: Seat, adj_seats_occ: int) -> (Seat, bool):
         # If a seat is empty (L) and there are no occupied seats adjacent to it, the seat becomes occupied.
-        if not seat['occupied'] and not any(adj_seats_occ):
+        if not seat['occupied'] and adj_seats_occ == 0:
             return Seat(occupied=True), True
         # If a seat is occupied (#) and four or more seats adjacent to it are also occupied,
         # the seat becomes empty.
-        elif seat['occupied'] and len(adj_seats_occ) >= 4:
+        elif seat['occupied'] and adj_seats_occ >= 4:
             return Seat(occupied=False), True
         # Otherwise, the seat's state does not change.
         else:
             return Seat(occupied=seat['occupied']), False
 
-    def apply_rules(self) -> ([[Seat or None]], bool):
+    def apply_rules(self) -> bool:
         result = []
+        new_occupied: Set[Tuple[int, int]] = set()
         changed = False
 
         for i, row in enumerate(self.seats):
@@ -81,18 +83,26 @@ class SeatSolver:
 
                 if (i, j) not in self.adjacent_seats:
                     self.adjacent_seats[(i, j)] = self.get_adjacent_seats(i, j)
-                adj_seats_occ = self.get_seats_occupied(self.adjacent_seats[(i, j)])
+
+                adj_seats_occ = 0
+                for s in self.adjacent_seats[(i, j)]:
+                    if (s[0], s[1]) in self.occupied:
+                        adj_seats_occ += 1
 
                 new_seat, seat_changed = self.apply_rule(seat, adj_seats_occ)
                 result[i].append(new_seat)
+                if new_seat['occupied']:
+                    new_occupied.add((i, j))
                 if seat_changed:
                     changed = True
 
-        return result, changed
+        self.occupied = new_occupied
+        self.seats = result
+        return changed
 
     def run(self) -> int:
         while True:
-            self.seats, changed = self.apply_rules()
+            changed = self.apply_rules()
             # Check if something changed
             if not changed:
                 occupied = 0
@@ -130,13 +140,13 @@ class SeatSolver2(SeatSolver):
         return result
 
     @staticmethod
-    def apply_rule(seat: Seat, adj_seats_occ: [bool]) -> (Seat, bool):
+    def apply_rule(seat: Seat, adj_seats_occ: int) -> (Seat, bool):
         # If a seat is empty (L) and there are no occupied seats adjacent to it, the seat becomes occupied.
-        if not seat['occupied'] and not any(adj_seats_occ):
+        if not seat['occupied'] and not adj_seats_occ:
             return Seat(occupied=True), True
         # If a seat is occupied (#) and *five* or more seats adjacent to it are also occupied,
         # the seat becomes empty.
-        elif seat['occupied'] and len(adj_seats_occ) >= 5:
+        elif seat['occupied'] and adj_seats_occ >= 5:
             return Seat(occupied=False), True
         # Otherwise, the seat's state does not change.
         else:
