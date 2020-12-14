@@ -35,17 +35,20 @@ class Program:
                 print(f"Unsupported instruction: {instruction}")
 
     def set_memory(self, address: int, value: int):
-        # Convert to bits
+        # Convert value to bits
         bits = self.int_to_bits(value)
         # Apply mask
-        for i, mask_bit in enumerate(self.mask):
-            if mask_bit != 'X':
-                bits[i] = int(mask_bit)
+        bits = self.apply_mask(bits)
         # Convert back to integer and update memory
         self.memory[address] = self.bits_to_int(bits)
 
+    def apply_mask(self, bits: [int]):
+        for i, mask_bit in enumerate(self.mask):
+            if mask_bit != 'X':
+                bits[i] = int(mask_bit)
+        return bits
+
     def int_to_bits(self, value: int) -> [int]:
-        # Convert value to bits
         bits = [1 if digit == '1' else 0 for digit in bin(value)[2:]]
         # Zero pad
         while len(bits) < self.val_length:
@@ -60,9 +63,45 @@ class Program:
         return value
 
 
+class Program2(Program):
+
+    def set_memory(self, address: int, value: int):
+        # Convert address to bits
+        bits = self.int_to_bits(address)
+        # Apply mask
+        addresses = self.apply_address_mask(bits)
+        # Update those memory location
+        for address in addresses:
+            self.memory[address] = value
+
+    def apply_address_mask(self, bits: [int]) -> [int]:
+        addresses = [[]]
+        for i, mask_bit in enumerate(self.mask):
+            if mask_bit == '1':
+                for a in addresses:
+                    a.append(1)
+            elif mask_bit == '0':
+                for a in addresses:
+                    a.append(bits[i])
+            elif mask_bit == 'X':
+                new_addresses = []
+                for a in addresses:
+                    b = a.copy()
+                    a.append(0)
+                    b.append(1)
+                    new_addresses.append(b)
+                addresses += new_addresses
+
+        return [self.bits_to_int(a) for a in addresses]
+
+
 if __name__ == '__main__':
     input14 = read_input('input/day14')
 
     program = Program(input14)
     program.init()
     print(f"Part 1: sum of memory: {sum(program.memory.values())}")
+
+    program = Program2(input14)
+    program.init()
+    print(f"Part 2: sum of memory: {sum(program.memory.values())}")
