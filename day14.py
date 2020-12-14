@@ -1,4 +1,5 @@
 import re
+import time
 from typing import Dict
 
 programType = (str, int, int) or (str, str)
@@ -98,10 +99,14 @@ class Program2(Program):
 if __name__ == '__main__':
     input14 = read_input('input/day14')
 
+    t1 = time.time()
     program = Program(input14)
     program.init()
     print(f"Part 1: sum of memory: {sum(program.memory.values())}")
+    print(f"   Time: {(time.time() - t1) * 1000} ms")
 
+    t1 = time.time()
     program = Program2(input14)
     program.init()
     print(f"Part 2: sum of memory: {sum(program.memory.values())}")
+    print(f"   Time: {(time.time() - t1) * 1000} ms")
