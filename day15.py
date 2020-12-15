@@ -14,9 +14,12 @@ class MemoryGame:
     def play(self, rounds: int):
         # Then, each turn consists of considering the most recently spoken number:
         while self.index < rounds:
-            last_num = self.last_num
-            self.last_num = self.index - self.last_spoken.get(self.last_num, self.index)
-            self.last_spoken[last_num] = self.index
+            if self.last_num in self.last_spoken:
+                num = self.index - self.last_spoken.get(self.last_num)
+            else:
+                num = self.index
+            self.last_spoken[num] = self.index
+            self.last_num = num
             self.index += 1
 
 
