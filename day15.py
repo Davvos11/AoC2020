@@ -8,19 +8,16 @@ input15 = [0, 1, 4, 13, 15, 12, 16]
 class MemoryGame:
     def __init__(self, starting_numbers: [int]):
         self.last_spoken = {num: i + 1 for i, num in enumerate(starting_numbers)}
-        self.index = len(self.last_spoken)
         self.last_num = starting_numbers[-1]
 
     def play(self, rounds: int):
-        # Then, each turn consists of considering the most recently spoken number:
-        while self.index < rounds:
+        for i in range(len(self.last_spoken), rounds):
             if self.last_num in self.last_spoken:
-                num = self.index - self.last_spoken.get(self.last_num)
+                num = i - self.last_spoken.get(self.last_num)
             else:
-                num = self.index
-            self.last_spoken[num] = self.index
+                num = i
+            self.last_spoken[num] = i
             self.last_num = num
-            self.index += 1
 
 
 if __name__ == '__main__':
