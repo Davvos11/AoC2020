@@ -7,36 +7,16 @@ input15 = [0, 1, 4, 13, 15, 12, 16]
 
 class MemoryGame:
     def __init__(self, starting_numbers: [int]):
-        self.last_spoken = {num: [None, i] for i, num in enumerate(starting_numbers)}
+        self.last_spoken = {num: i + 1 for i, num in enumerate(starting_numbers)}
         self.index = len(self.last_spoken)
         self.last_num = starting_numbers[-1]
 
     def play(self, rounds: int):
         # Then, each turn consists of considering the most recently spoken number:
         while self.index < rounds:
-            try:
-                last_num_history = self.last_spoken[self.last_num]
-
-                # If that was the first time the number has been spoken, the current player says 0.
-                if last_num_history[0] is None:
-                    self.last_num = 0
-                # Otherwise, the number had been spoken before;
-                # the current player announces how many turns apart the number is from when it was previously spoken.
-                else:
-                    self.last_num = last_num_history[1] - last_num_history[0]
-
-            except KeyError:
-                # If this is the first time the number has been spoken, the current player says 0.
-                self.last_num = 0
-
-            try:
-                current_num_history = self.last_spoken[self.last_num]
-                current_num_history[0] = current_num_history[1]
-                current_num_history[1] = self.index
-            except KeyError:
-                self.last_spoken[self.last_num] = [None, self.index]
-
-            # Update index
+            last_num = self.last_num
+            self.last_num = self.index - self.last_spoken.get(self.last_num, self.index)
+            self.last_spoken[last_num] = self.index
             self.index += 1
 
 
