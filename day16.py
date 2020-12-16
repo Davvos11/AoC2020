@@ -17,17 +17,25 @@ def read_tickets(tickets: str) -> [[int]]:
     return result
 
 
-def read_input(filename: str):
+def read_input(filename: str) -> ([(str, Set[int])], [int], [[int]]):
     with open(filename) as file:
         fields, your_ticket, nearby_tickets = \
-            re.findall(r"(.+)\n\nyour ticket:\n(.+)\n\nnearby tickets:\n(.+)", file.read(), re.DOTALL)[0]
+            re.findall(r"(.+)\n\nyour ticket:\n(.+)\n\nnearby tickets:\n(.+)", file.read().strip(), re.DOTALL)[0]
 
     return read_fields(fields), read_tickets(your_ticket)[0], read_tickets(nearby_tickets)
 
 
+def get_invalid_ticket_rate(rules: [(str, Set[int])], tickets: [[int]]) -> int:
+    rate = 0
+    all_valid_values = set().union(*[r[1] for r in rules])
+    for ticket in tickets:
+        for value in ticket:
+            if value not in all_valid_values:
+                rate += value
+    return rate
+
+
 if __name__ == '__main__':
-    input16 = read_input('input/day16_test')
-    print(input16)
+    input16 = read_input('input/day16')
 
-
-
+    print(f"Puzzle 1: error rate: {get_invalid_ticket_rate(input16[0], input16[2])}")
